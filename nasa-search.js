@@ -1,142 +1,165 @@
 import { LitElement, html, css } from 'lit';
 import { DDDSuper } from "@lrnwebcomponents/d-d-d/d-d-d.js";
-
-
 import "./nasa-image.js";
+// Define the NasaSearch class extending LitElement
 export class NasaSearch extends LitElement {
   static get properties() {
     return {
       title: { type: String },
       loading: { type: Boolean, reflect: true },
-      items: { type: Array, },
-      value: { type: String },
+      items: { type: Array },
+      value: { type: String }
     };
   }
-
+    // Define styles for the component
   static get styles() {
     return css`
       :host {
         display: block;
-        
+        background-color: var(--ddd-theme-default-limestoneLight);
+        padding: var(--ddd-spacing-4);
       }
-      :host([loading]) .results {
-        opacity: 0.1;
-        visibility: hidden;
-        height: var(--ddd-ls-72-lg);
-      }
-      .results {
-        visibility: visible;
-        height: 100%;
-        opacity: 1;
-        transition-delay: .5s;
-        transition: .5s all ease-in-out;
-        display:flex;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
-       
-        
 
+      .search-container {
+        margin-bottom: var(--ddd-spacing-6);
       }
 
       details {
-        margin: var(--ddd-spacing-4);
-        padding: var(--ddd-spacing-4);
-        background-color: var(--ddd-theme-default-nittanyNavy);
-        border-radius: var(--ddd-spacing-2);
-      }
-      summary {
-        font-size: var(--ddd-spacing-6);
-        padding: var(--ddd-spacing-2);
-        color: var(--ddd-theme-default-pughBlue);
-        font-size: var(--ddd-spacing-10);
-        text-align: center;
-        font-family: var(--ddd-font-secondary);
-        
-      }
-      input {
-        font-size: var( --ddd-spacing-5);
-        line-height: var(--ddd-spacing-10);
-        width: 100%;
-        border-radius: var(--ddd-spacing-2);
-        padding-left: var(--ddd-spacing-2);
-        
+        background-color: var(--ddd-theme-default-skyBlue);
+        border-radius: var(--ddd-radius-md);
+        padding: var(--ddd-spacing-3);
+        margin-bottom: var(--ddd-spacing-4);
       }
 
-      
+      summary {
+        font-family: var(--ddd-font-primary);
+        font-size: var(--ddd-font-size-4xl);
+        color: var(--ddd-theme-default-shrineBlue);
+        padding: var(--ddd-spacing-2);
+        cursor: pointer;
+      }
+
+      input {
+        width: 100%;
+        font-family: var(--ddd-font-secondary);
+        font-size: var(--ddd-font-size-xl);
+        padding: var(--ddd-spacing-3);
+        border: 2px solid var(--ddd-theme-default-navy40);
+        border-radius: var(--ddd-radius-sm);
+        background-color: var(--ddd-theme-default-white);
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--ddd-theme-default-keystoneYellow);
+        box-shadow: var(--ddd-boxShadow-sm);
+      }
+
+      .results {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: var(--ddd-spacing-4);
+        padding: var(--ddd-spacing-2);
+      }
+
+      :host([loading]) .results {
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
+      }
+
+      h2 {
+        font-family: var(--ddd-font-primary);
+        color: var(--ddd-theme-default-nittanyNavy);
+        text-align: center;
+        margin: var(--ddd-spacing-4) 0;
+        font-size: var(--ddd-font-size-3xl);
+      }
     `;
   }
-
+  // Constructor to initialize properties
   constructor() {
     super();
+    this.initializeProperties();
+  }
+   // Method to set initial property values
+  initializeProperties() {
     this.value = null;
     this.title = '';
     this.loading = false;
     this.items = [];
   }
-
+   // Render method to define the component's HTML structure
   render() {
     return html`
-    <h2>${this.title}</h2>
-
-    <details open>
-      <summary>NASA Images</summary>
-      <div>
-        <input id="input" placeholder="Space and Stuff" @input="${this.inputChanged}" />
+      <div class="search-container">
+        <h2>${this.title}</h2>
+        <details open>
+          <summary>Explore NASA Images</summary>
+          <input 
+            id="input" 
+            placeholder="Search space, planets, and other stuff..." 
+            @input="${this.handleInput}"
+          />
+        </details>
       </div>
-    </details>
-    
-    <div class="results">
-      
-  
-    
-      ${this.items.map((item, index) => html`
-        <a href="${item.links[0].href}" target="_blank" tabindex="0">
-        
 
-      <nasa-image
-        source="${item.links[0].href}"
-        title="${item.data[0].title}"
-        alt="${item.data[0].description}"
-        owner="${item.data[0].secondary_creator}"
-
-      ></nasa-image>
-      </a>
-      `)}
-    </div>
+      <div class="results">
+        ${this.renderSearchResults()}
+      </div>
     `;
   }
 
-  inputChanged(e) {
-    this.value = this.shadowRoot.querySelector('#input').value;
+  renderSearchResults() {
+    return this.items.map(item => html`
+      <a href="${item.links[0].href}" target="_blank" tabindex="0">
+        <nasa-image
+          source="${item.links[0].href}"
+          title="${item.data[0].title}"
+          alt="${item.data[0].description}"
+          owner="${item.data[0].secondary_creator || 'NASA'}"
+        ></nasa-image>
+      </a>
+    `);
   }
-  // life cycle will run when anything defined in `properties` is modified
+
+  handleInput(e) {
+    this.value = e.target.value;
+  }
+
   updated(changedProperties) {
-    // see if value changes from user input and is not empty
-    if (changedProperties.has('value') && this.value) {
-      this.updateResults(this.value);
-    }
-    else if (changedProperties.has('value') && !this.value) {
-      this.items = [];
-    }
-    // @debugging purposes only
-    if (changedProperties.has('items') && this.items.length > 0) {
-      console.log(this.items);
+    if (changedProperties.has('value')) {
+      this.handleValueUpdate();
     }
   }
 
-  updateResults(value) {
+  handleValueUpdate() {
+    if (this.value) {
+      this.fetchNASAImages(this.value);
+    } else {
+      this.items = [];
+    }
+  }
+
+  async fetchNASAImages(searchTerm) {
     this.loading = true;
-    fetch(`https://images-api.nasa.gov/search?media_type=image&q=${value}`).then(d => d.ok ? d.json(): {}).then(data => {
+    try {
+      const response = await fetch(
+        `https://images-api.nasa.gov/search?media_type=image&q=${searchTerm}`
+      );
+      const data = await response.json();
       if (data.collection) {
-        this.items = [];
         this.items = data.collection.items;
-        this.loading = false;
-      }  
-    });
+      }
+    } catch (error) {
+      console.error('Error fetching NASA images:', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   static get tag() {
     return 'nasa-search';
   }
 }
+
 customElements.define(NasaSearch.tag, NasaSearch);

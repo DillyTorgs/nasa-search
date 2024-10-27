@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 
 
 export class NasaImage extends LitElement {
-
+ // Define NasaImage component that extends LitElement to create a custom NASA image card element
   constructor() {
     super();
     this.title = 'Untitled';
@@ -10,7 +10,7 @@ export class NasaImage extends LitElement {
     this.alt ='';
     this.owner = 'Unknown Owner';
   }
-
+    // Define the properties that can be set on the element, all as String types
   static get properties() {
     return {
         source: { type: String },
@@ -19,7 +19,7 @@ export class NasaImage extends LitElement {
         owner: { type: String }
     };
   }
-
+  // Define the CSS styles for the component using Lit's css template literal
   static get styles() {
     return [css`
     
@@ -41,7 +41,7 @@ export class NasaImage extends LitElement {
       width: 240px;
       height: 240px;
       border: var(--ddd-border-sm);
-      border-color: var(--ddd-theme-default-nittanyNavy);
+      border-color: var(--ddd-theme-default-);
       box-shadow: var(--ddd-boxShadow-xl);
       border-radius: var(--ddd-spacing-3);
       text-decoration: none;
@@ -49,12 +49,13 @@ export class NasaImage extends LitElement {
       margin-top: var(--ddd-spacing-2);
       background-color: var(--ddd-theme-default-limestoneLight);
     }
+    // Define hover and focus states for interactive feedback
     .card:hover{
-      background-color: var(--ddd-theme-default-keystoneYellow);
+      background-color: var(--ddd-theme-default-skyMaxLight);
     }
 
     .card:focus{
-      background-color: var(--ddd-theme-default-opportunityGreen);
+      background-color: var(--ddd-theme-default-globalNeon);
       outline: none;
     }
 
@@ -63,7 +64,7 @@ export class NasaImage extends LitElement {
       text-decoration: none;
       text-align: center;
       font-size: var(--ddd-spacing-3);
-      color: var(--ddd-theme-default-beaverBlue);
+      color: var(--ddd-theme-default-navy70);
 
     }
 
@@ -74,7 +75,7 @@ export class NasaImage extends LitElement {
     
     `];
   }
-
+   // Define the HTML template for the component using Lit's html template literal
   render() {
     return html`
     <div class="card" tabindex="0">
@@ -86,6 +87,7 @@ export class NasaImage extends LitElement {
     </div>
     `;
   }
+  // Define the custom element tag name
   static get tag() {
     return "nasa-image";
   }
